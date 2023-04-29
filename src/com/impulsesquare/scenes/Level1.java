@@ -1,5 +1,5 @@
 package com.impulsesquare.scenes;
 
-public class SceneGeneretor {
+public class Level1 {
 
 }
