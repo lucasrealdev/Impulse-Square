@@ -5,7 +5,7 @@ import java.io.Serializable;
 import javax.swing.ImageIcon;
 
 public class Blocks implements Serializable{
-	
+	private static final long serialVersionUID = 1L;
 	private int WIDTH = 10; // define fixed width of every object
 	private int HEIGHT = 10; // define fixed height of every object
 	private ImageIcon texture; // texture of objects
