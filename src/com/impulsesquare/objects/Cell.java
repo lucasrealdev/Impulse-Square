@@ -1,28 +1,34 @@
 package com.impulsesquare.objects;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
+import javax.swing.SwingConstants;
 
 public class Cell extends JLabel{
 	private static final long serialVersionUID = 1L;
 	private boolean selected = false;
-	private ImageIcon texture;
+	private ImageIcon texture = new ImageIcon(getClass().getResource("/com/impulsesquare/textures/transparent.png"));
+	private String color;
 	public Cell() {
-		setSize(50, 50); // DEFINE O TAMANHO DA CELULA
+		setPreferredSize(new Dimension(50, 50));
 		setBorder(BorderFactory.createLineBorder(Color.black, 1));
 		addhover();
 	}
 	
-	public Cell(ImageIcon texture) {
-		setSize(50, 50);
+	public Cell(ImageIcon texture, String color) {
+		setPreferredSize(new Dimension(50, 50));
 		setIcon(texture);
 		this.texture = texture;
+		this.color = color;
 		addhovertexture();
+		setVerticalTextPosition(SwingConstants.BOTTOM);
+	    setHorizontalTextPosition(SwingConstants.CENTER);
 	}
 	
 	private void addhover() {
@@ -67,5 +73,13 @@ public class Cell extends JLabel{
 
 	public void setTexture(ImageIcon texture) {
 		this.texture = texture;
+	}
+
+	public String getColor() {
+		return color;
+	}
+
+	public void setColor(String color) {
+		this.color = color;
 	}
 }
