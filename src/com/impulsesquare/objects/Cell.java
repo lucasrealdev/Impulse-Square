@@ -13,12 +13,13 @@ import javax.swing.SwingConstants;
 public class Cell extends JLabel{
 	private static final long serialVersionUID = 1L;
 	private boolean selected = false;
-	private ImageIcon texture = new ImageIcon(getClass().getResource("/com/impulsesquare/textures/transparent.png"));
+	private ImageIcon texture = new ImageIcon(getClass().getResource("/com/impulsesquare/images/transparent.png"));
 	private String color;
 	public Cell() {
 		setPreferredSize(new Dimension(50, 50));
 		setBorder(BorderFactory.createLineBorder(Color.black, 1));
 		addhover();
+		setHorizontalAlignment(SwingConstants.CENTER);
 	}
 	
 	public Cell(ImageIcon texture, String color) {
@@ -27,8 +28,7 @@ public class Cell extends JLabel{
 		this.texture = texture;
 		this.color = color;
 		addhovertexture();
-		setVerticalTextPosition(SwingConstants.BOTTOM);
-	    setHorizontalTextPosition(SwingConstants.CENTER);
+	    setHorizontalAlignment(SwingConstants.CENTER);
 	}
 	
 	private void addhover() {

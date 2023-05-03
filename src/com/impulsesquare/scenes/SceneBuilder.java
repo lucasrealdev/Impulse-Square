@@ -2,18 +2,23 @@ package com.impulsesquare.scenes;
 
 import java.awt.BorderLayout;
 
+
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
+import java.awt.Image;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
 
-
+import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -33,14 +38,32 @@ public class SceneBuilder extends JFrame{
     private static final int NUM_ROWS = HEIGHT_SCREEN / HEIGHT_CELL; 
     
     //CRIA LISTA COM AS TEXTURAS QUE ESTAO NO PACOTE
-    File directory = new File("src/com/impulsesquare/textures");
-    File[] files = directory.listFiles();
+    private File directory = new File("src/com/impulsesquare/textures");
+    private File[] files = directory.listFiles();
     
     //CRIA LISTA DE CELULAS	
-    ArrayList<Cell> list_cell = new ArrayList<Cell>();
+    private ArrayList<Cell> list_cell = new ArrayList<Cell>();
     
     //CRIA LISTA DE BLOCOS DE TEXTURA
-    ArrayList<Cell> list_texture_blocks = new ArrayList<Cell>();
+    private ArrayList<Cell> list_texture_blocks = new ArrayList<Cell>();
+    
+    private ImageIcon selected_img = new ImageIcon(getClass().getResource("/com/impulsesquare/images/selected.png"));
+    private ImageIcon rotate_img = new ImageIcon(getClass().getResource("/com/impulsesquare/images/rotate.png"));
+    private ImageIcon export_img = new ImageIcon(getClass().getResource("/com/impulsesquare/images/export.png"));
+    private ImageIcon eraser_img = new ImageIcon(getClass().getResource("/com/impulsesquare/images/eraser.png"));
+    private ImageIcon transparent_img = new ImageIcon(getClass().getResource("/com/impulsesquare/images/transparent.png"));
+    
+    //CRIA BOTAO DE APAGAR
+    private JButton eraser_btn = new JButton(eraser_img);
+    private boolean isEraser = false;
+    
+    //CRIA BOTAO DE ROTACIONAR IMAGEM
+    JButton rotate_btn = new JButton(rotate_img);
+    
+    //CRIA BOTAO DE EXPORTAR SCENA
+    JButton export_scene_btn = new JButton(export_img);
+    
+    private Cell last_texture = null;
     
 	public SceneBuilder() {
 		setTitle("Criador de Cenas");
@@ -49,9 +72,16 @@ public class SceneBuilder extends JFrame{
 		setLocationRelativeTo(null);
 		setResizable(true);
 		setVisible(true);
+		selected_img.setImage(selected_img.getImage().getScaledInstance(30, 30, 100));
+		rotate_img.setImage(rotate_img.getImage().getScaledInstance(30, 30, 100));
+		export_img.setImage(export_img.getImage().getScaledInstance(30, 30, 100));
+		eraser_img.setImage(eraser_img.getImage().getScaledInstance(30, 30, 100));
+		transparent_img.setImage(transparent_img.getImage().getScaledInstance(30, 30, 100));
+		
 		makebuilder();
 	}
 
+	//FUNCAO PARA CONSTRUIR A TELA E OS COMPONENTES
 	private void makebuilder()
 	{
 		GridBagConstraints gbc = new GridBagConstraints();
@@ -74,6 +104,40 @@ public class SceneBuilder extends JFrame{
 	    textures_scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 	    textures_scroll.setPreferredSize(new Dimension(150, HEIGHT_SCREEN));
 	    
+	    rotate_btn.setPreferredSize(new Dimension(50, 50));
+	    rotate_btn.setOpaque(false);
+	    rotate_btn.setFocusPainted(false);
+	    rotate_btn.setBackground(new Color(0,0,0,0));
+	    rotate_btn.addMouseListener(new MouseAdapter() {
+	        public void mouseClicked(MouseEvent e) {
+	        	ImageIcon resized = rotate_texture(last_texture.getTexture());
+	        	last_texture.setTexture(resized);
+	        	last_texture.setIcon(resized);
+	        }
+	    });
+	    
+	    export_scene_btn.setPreferredSize(new Dimension(50, 50));
+	    export_scene_btn.setOpaque(false);
+	    export_scene_btn.setFocusPainted(false);
+	    export_scene_btn.setBackground(new Color(0,0,0,0));
+	    export_scene_btn.addMouseListener(new MouseAdapter() {
+	        public void mouseClicked(MouseEvent e) {
+	        	
+	        }
+	    });
+	    
+	    eraser_btn.setPreferredSize(new Dimension(50, 50));
+	    eraser_btn.setOpaque(false);
+	    eraser_btn.setFocusPainted(false);
+	    eraser_btn.setBackground(new Color(0,0,0,0));
+	    eraser_btn.addMouseListener(new MouseAdapter() {
+	        public void mouseClicked(MouseEvent e) {
+	        	isEraser = true;
+	        	eraser_btn.setBorder(BorderFactory.createLineBorder(Color.green, 1));
+	        	if (last_texture != null) last_texture.setIcon(last_texture.getTexture());
+	        }
+	    });
+	    
 		//CRIAR CELULAS DA MALHA
 		for (int i = 0; i < NUM_ROWS * NUM_COLUNMS; i++)
 		{
@@ -90,7 +154,8 @@ public class SceneBuilder extends JFrame{
 	    }
 		
 		//PEGAR AS TEXTURAS DO PACOTE
-		menu_textures.setBackground(Color.LIGHT_GRAY);
+		leftPane.setBackground(Color.lightGray);
+		menu_textures.setBackground(Color.lightGray);
 		for (File file : files) {
 		    if (file.isFile() && file.getName().endsWith(".png")) {
 		    	//PEGA O NOME DAS IMAGENS RESGATADAS
@@ -98,7 +163,7 @@ public class SceneBuilder extends JFrame{
 		    	//CRIA IMAGEM
                 ImageIcon textures = new ImageIcon(getClass().getResource("/com/impulsesquare/textures/"+images_name));
                 //REDIMENSIONA IMAGENS
-                textures.setImage(textures.getImage().getScaledInstance(50, 50, 100));
+                textures.setImage(textures.getImage().getScaledInstance(WIDTH_CELL, HEIGHT_CELL, 100));
                 //CRIA BLOCOS DE TEXTURA
                 Cell texture_block = new Cell(textures, images_name.replace(".png", ""));
                 
@@ -114,6 +179,10 @@ public class SceneBuilder extends JFrame{
                 menu_textures.setBorder(new EmptyBorder(1, 5, 10, 10));
 		    }
 	    }
+		menu_textures.add(eraser_btn);
+		menu_textures.add(rotate_btn);
+		menu_textures.add(export_scene_btn);
+		
 		getContentPane().add(textures_scroll, BorderLayout.EAST);
 		getContentPane().add(malha, BorderLayout.CENTER);
 		pack();
@@ -125,7 +194,12 @@ public class SceneBuilder extends JFrame{
 		}
 	}
 	
+	//FUNCAO DE QUANDO CLICA NA CELULA
 	private void clickcell(Cell cell_clicked) {
+		if(isEraser) {
+			cell_clicked.setIcon(transparent_img);
+			return;
+		}
 		boolean find_texture = false;
 		for (int i = 0; i < list_texture_blocks.size(); i++) {
 			if (list_texture_blocks.get(i).isSelected()) {
@@ -139,6 +213,7 @@ public class SceneBuilder extends JFrame{
 		if(!find_texture) JOptionPane.showMessageDialog(null, "Nenhuma textura selecionada");
 	}
 	
+	//FUNCAO DE QUANDO CLICA NA TEXTURA
 	private void clicktexture(Cell cell_clicked) {
 		for (int i = 0; i < list_texture_blocks.size(); i++)
 		{
@@ -148,11 +223,25 @@ public class SceneBuilder extends JFrame{
 				list_texture_blocks.get(i).setIcon(list_texture_blocks.get(i).getTexture());
 			}
 		}
-		cell_clicked.setIcon(new ImageIcon(getClass().getResource("/com/impulsesquare/images/selected.png")));
+		cell_clicked.setIcon(selected_img);
 		cell_clicked.setSelected(true);
+		last_texture = cell_clicked;
+		isEraser = false;
+		eraser_btn.setBorder(rotate_btn.getBorder());
 	}
 	
+	//FUNCAO DE ROTACIONAR IMAGEM
+	public ImageIcon rotate_texture(ImageIcon last_texture) {
+	    Image image = last_texture.getImage();
+	    BufferedImage rotated = new BufferedImage(image.getWidth(null), image.getHeight(null), BufferedImage.TYPE_INT_ARGB);
+	    Graphics2D g2d = rotated.createGraphics();
+	    g2d.rotate(Math.toRadians(90), image.getWidth(null) / 2, image.getHeight(null) / 2);
+	    g2d.drawImage(image, 0, 0, null);
+	    g2d.dispose();
+	    return new ImageIcon(rotated);
+	}
 	
+	//COMECO DO PROGRAMA
 	public static void main(String[] args) {
 		SwingUtilities.invokeLater(SceneBuilder::new);
 	}
