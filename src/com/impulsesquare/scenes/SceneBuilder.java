@@ -3,10 +3,12 @@ package com.impulsesquare.scenes;
 import com.impulsesquare.objects.Button;
 
 import com.impulsesquare.objects.Cell;
+import com.impulsesquare.objects.CustomJPanel;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -25,10 +27,10 @@ import java.util.ArrayList;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 
 public class SceneBuilder extends JFrame implements Runnable {
@@ -56,6 +58,19 @@ public class SceneBuilder extends JFrame implements Runnable {
     private ImageIcon eraser_img = new ImageIcon(getClass().getResource("/com/impulsesquare/images/eraser.png"));
     private ImageIcon transparent_img = new ImageIcon(getClass().getResource("/com/impulsesquare/images/transparent.png"));
     
+    //BACKGROUND
+    private ImageIcon background_blue = new ImageIcon(getClass().getResource("/com/impulsesquare/images/background-blue.jpg"));
+    private ImageIcon background_red = new ImageIcon(getClass().getResource("/com/impulsesquare/images/background-red.jpg"));
+    private ImageIcon background_green = new ImageIcon(getClass().getResource("/com/impulsesquare/images/background-green.jpg"));
+    private ImageIcon background_yellow = new ImageIcon(getClass().getResource("/com/impulsesquare/images/background-yellow.jpg"));
+    
+    //BACKGROUND BUTTONS
+    private Button background_blue_btn = new Button(background_blue);
+    private Button background_red_btn = new Button(background_red);
+    private Button background_green_btn = new Button(background_green);
+    private Button background_yellow_btn = new Button(background_yellow);
+    private JLabel background_transparent = new JLabel("Sem Fundo");
+    
     //CRIA BOTAO DE APAGAR
     private Button eraser_btn = new Button(eraser_img);
     private boolean isEraser = false;
@@ -72,18 +87,16 @@ public class SceneBuilder extends JFrame implements Runnable {
     //GUARDA SE O MOUSE ESTA PRESSIONADO
     private boolean MousePressed = false;
     
+    //CRIA MALHA
+    private CustomJPanel malha = new CustomJPanel(new GridLayout(NUM_ROWS, NUM_COLUNMS));
+    
 	public SceneBuilder() {
 		setTitle("Criador de Cenas");
 		setSize(new Dimension(WIDTH_SCREEN, HEIGHT_SCREEN));
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setLocationRelativeTo(null);
-		setResizable(true);
+		setResizable(false);
 		setVisible(true);
-		selected_img.setImage(selected_img.getImage().getScaledInstance(30, 30, 100));
-		rotate_img.setImage(rotate_img.getImage().getScaledInstance(30, 30, 100));
-		export_img.setImage(export_img.getImage().getScaledInstance(30, 30, 100));
-		eraser_img.setImage(eraser_img.getImage().getScaledInstance(30, 30, 100));
-		transparent_img.setImage(transparent_img.getImage().getScaledInstance(30, 30, 100));
 		makebuilder();
 	}
 
@@ -100,10 +113,7 @@ public class SceneBuilder extends JFrame implements Runnable {
 		//CRIA MENU DE TEXTURAS
 	    JPanel menu_textures = new JPanel(new GridLayout(0, 2, 4, 4));
 	    
-	    //CRIA MALHA
-	    JPanel malha = new JPanel(new GridLayout(NUM_ROWS, NUM_COLUNMS));
-	    
-	    //CRIA PAINEL QIE GUARDA TEXTURAS
+	    //CRIA PAINEL QUE GUARDA TEXTURAS
 	    JPanel leftPane = new JPanel(new GridBagLayout());
 	    leftPane.add(menu_textures, gbc);
 	    
@@ -116,9 +126,11 @@ public class SceneBuilder extends JFrame implements Runnable {
 	    //CONFIGURA BOTAO DE ROTACIONAR TEXTURA
 	    rotate_btn.addMouseListener(new MouseAdapter() {
 	        public void mouseClicked(MouseEvent e) {
-	        	ImageIcon resized = rotate_texture(last_texture.getTexture());
-	        	last_texture.setTexture(resized);
-	        	last_texture.setIcon(resized);
+	        	if(last_texture != null) {
+	        		ImageIcon resized = rotate_texture(last_texture.getTexture());
+		        	last_texture.setTexture(resized);
+		        	last_texture.setIcon(resized);
+	        	}
 	        }
 	    });
 	    
@@ -137,6 +149,40 @@ public class SceneBuilder extends JFrame implements Runnable {
 	        	if (last_texture != null) last_texture.setIcon(last_texture.getTexture());
 	        }
 	    });
+	    //CRIA BOTOES DE TROCAR FUNDO
+	    background_blue_btn.addMouseListener(new MouseAdapter() {
+	        public void mouseClicked(MouseEvent e) {
+	        	malha.setBackground(background_blue);
+	        	malha.repaint();
+	        }
+	    });
+	    background_red_btn.addMouseListener(new MouseAdapter() {
+	        public void mouseClicked(MouseEvent e) {
+	        	malha.setBackground(background_red);
+	        	malha.repaint();
+	        }
+	    });
+	    background_green_btn.addMouseListener(new MouseAdapter() {
+	        public void mouseClicked(MouseEvent e) {
+	        	malha.setBackground(background_green);
+	        	malha.repaint();
+	        }
+	    });
+	    background_yellow_btn.addMouseListener(new MouseAdapter() {
+	        public void mouseClicked(MouseEvent e) {
+	        	malha.setBackground(background_yellow);
+	        	malha.repaint();
+	        }
+	    });
+	    background_transparent.addMouseListener(new MouseAdapter() {
+	        public void mouseClicked(MouseEvent e) {
+	        	malha.setBackground(transparent_img);
+	        	malha.repaint();
+	        }
+	    });
+	    background_transparent.setPreferredSize(new Dimension(50, 50));
+	    background_transparent.setFont(new Font("Serif", Font.PLAIN, 10));
+	    background_transparent.setBorder(BorderFactory.createLineBorder(Color.gray));
 	    
 		//CRIAR CELULAS DA MALHA
 		for (int i = 0; i < NUM_ROWS * NUM_COLUNMS; i++)
@@ -185,6 +231,11 @@ public class SceneBuilder extends JFrame implements Runnable {
 		    }
 	    }
         leftPane.setBorder(new EmptyBorder(5, 0, 5, 0));
+        menu_textures.add(background_blue_btn);
+        menu_textures.add(background_green_btn);
+        menu_textures.add(background_red_btn);
+        menu_textures.add(background_yellow_btn);
+        menu_textures.add(background_transparent);
 		menu_textures.add(eraser_btn);
 		menu_textures.add(rotate_btn);
 		menu_textures.add(export_scene_btn);
@@ -205,6 +256,7 @@ public class SceneBuilder extends JFrame implements Runnable {
 	            FileOutputStream fos = new FileOutputStream(name_scene);
 	            ObjectOutputStream oos = new ObjectOutputStream(fos);
 	            oos.writeObject(list_cell);
+	            oos.writeObject(malha.getBackgroundImage());
 	            oos.close();
 	            fos.close();
 	            JOptionPane.showMessageDialog(null, "Mapa salvo com sucesso!");
