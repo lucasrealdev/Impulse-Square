@@ -16,14 +16,14 @@ public class Cell extends JLabel{
 	private ImageIcon texture = new ImageIcon(getClass().getResource("/com/impulsesquare/images/transparent.png"));
 	private String color;
 	public Cell() {
-		setPreferredSize(new Dimension(50, 50));
+		setPreferredSize(new Dimension(45, 45));
 		setBorder(BorderFactory.createLineBorder(Color.black, 1));
 		addhover();
 		setHorizontalAlignment(SwingConstants.CENTER);
 	}
 	
 	public Cell(ImageIcon texture, String color) {
-		setPreferredSize(new Dimension(50, 50));
+		setPreferredSize(new Dimension(45, 45));
 		setIcon(texture);
 		this.texture = texture;
 		this.color = color;

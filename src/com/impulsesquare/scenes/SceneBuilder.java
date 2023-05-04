@@ -1,8 +1,10 @@
 package com.impulsesquare.scenes;
 
+import com.impulsesquare.objects.Button;
+
+import com.impulsesquare.objects.Cell;
+
 import java.awt.BorderLayout;
-
-
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
@@ -13,12 +15,15 @@ import java.awt.Image;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
+
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.ObjectOutputStream;
+
 import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
-import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -26,12 +31,10 @@ import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 
-import com.impulsesquare.objects.Cell;
-
-public class SceneBuilder extends JFrame{
+public class SceneBuilder extends JFrame implements Runnable {
 	private static final long serialVersionUID = 1L;
-	private static final int WIDTH_CELL = 50;
-    private static final int HEIGHT_CELL = 50;
+	private static final int WIDTH_CELL = 45;
+    private static final int HEIGHT_CELL = 45;
     private static final int WIDTH_SCREEN = 800;
     private static final int HEIGHT_SCREEN = 500;
     private static final int NUM_COLUNMS = WIDTH_SCREEN / WIDTH_CELL;
@@ -42,10 +45,10 @@ public class SceneBuilder extends JFrame{
     private File[] files = directory.listFiles();
     
     //CRIA LISTA DE CELULAS	
-    private ArrayList<Cell> list_cell = new ArrayList<Cell>();
+    private ArrayList<Cell> list_cell = new ArrayList<>();
     
     //CRIA LISTA DE BLOCOS DE TEXTURA
-    private ArrayList<Cell> list_texture_blocks = new ArrayList<Cell>();
+    private ArrayList<Cell> list_texture_blocks = new ArrayList<>();
     
     private ImageIcon selected_img = new ImageIcon(getClass().getResource("/com/impulsesquare/images/selected.png"));
     private ImageIcon rotate_img = new ImageIcon(getClass().getResource("/com/impulsesquare/images/rotate.png"));
@@ -54,16 +57,20 @@ public class SceneBuilder extends JFrame{
     private ImageIcon transparent_img = new ImageIcon(getClass().getResource("/com/impulsesquare/images/transparent.png"));
     
     //CRIA BOTAO DE APAGAR
-    private JButton eraser_btn = new JButton(eraser_img);
+    private Button eraser_btn = new Button(eraser_img);
     private boolean isEraser = false;
     
     //CRIA BOTAO DE ROTACIONAR IMAGEM
-    JButton rotate_btn = new JButton(rotate_img);
+    private Button rotate_btn = new Button(rotate_img);
     
     //CRIA BOTAO DE EXPORTAR SCENA
-    JButton export_scene_btn = new JButton(export_img);
+    private Button export_scene_btn = new Button(export_img);
     
+    //GUARDA A ULTIMA CELULA SELECIONADA
     private Cell last_texture = null;
+    
+    //GUARDA SE O MOUSE ESTA PRESSIONADO
+    private boolean MousePressed = false;
     
 	public SceneBuilder() {
 		setTitle("Criador de Cenas");
@@ -77,13 +84,13 @@ public class SceneBuilder extends JFrame{
 		export_img.setImage(export_img.getImage().getScaledInstance(30, 30, 100));
 		eraser_img.setImage(eraser_img.getImage().getScaledInstance(30, 30, 100));
 		transparent_img.setImage(transparent_img.getImage().getScaledInstance(30, 30, 100));
-		
 		makebuilder();
 	}
 
 	//FUNCAO PARA CONSTRUIR A TELA E OS COMPONENTES
 	private void makebuilder()
 	{
+		//LAYOUT DO MENU
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.gridx = 0;
 	    gbc.gridy = 0;
@@ -96,18 +103,17 @@ public class SceneBuilder extends JFrame{
 	    //CRIA MALHA
 	    JPanel malha = new JPanel(new GridLayout(NUM_ROWS, NUM_COLUNMS));
 	    
+	    //CRIA PAINEL QIE GUARDA TEXTURAS
 	    JPanel leftPane = new JPanel(new GridBagLayout());
 	    leftPane.add(menu_textures, gbc);
 	    
+	    //CONFIGURA SCROLL DO MENU DE TEXTURAS
 	    JScrollPane textures_scroll = new JScrollPane(leftPane);
 	    textures_scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 	    textures_scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 	    textures_scroll.setPreferredSize(new Dimension(150, HEIGHT_SCREEN));
 	    
-	    rotate_btn.setPreferredSize(new Dimension(50, 50));
-	    rotate_btn.setOpaque(false);
-	    rotate_btn.setFocusPainted(false);
-	    rotate_btn.setBackground(new Color(0,0,0,0));
+	    //CONFIGURA BOTAO DE ROTACIONAR TEXTURA
 	    rotate_btn.addMouseListener(new MouseAdapter() {
 	        public void mouseClicked(MouseEvent e) {
 	        	ImageIcon resized = rotate_texture(last_texture.getTexture());
@@ -116,20 +122,14 @@ public class SceneBuilder extends JFrame{
 	        }
 	    });
 	    
-	    export_scene_btn.setPreferredSize(new Dimension(50, 50));
-	    export_scene_btn.setOpaque(false);
-	    export_scene_btn.setFocusPainted(false);
-	    export_scene_btn.setBackground(new Color(0,0,0,0));
+	    //CONFIGURAS BOTAO DE EXPORTAR MAPA
 	    export_scene_btn.addMouseListener(new MouseAdapter() {
 	        public void mouseClicked(MouseEvent e) {
-	        	
+	        	makeScene();
 	        }
 	    });
 	    
-	    eraser_btn.setPreferredSize(new Dimension(50, 50));
-	    eraser_btn.setOpaque(false);
-	    eraser_btn.setFocusPainted(false);
-	    eraser_btn.setBackground(new Color(0,0,0,0));
+	    //CONFIGURA BOTAO DE APAGAR TEXTURA
 	    eraser_btn.addMouseListener(new MouseAdapter() {
 	        public void mouseClicked(MouseEvent e) {
 	        	isEraser = true;
@@ -146,7 +146,13 @@ public class SceneBuilder extends JFrame{
     		{
     			public void mouseClicked(MouseEvent e)
     			{
-    				clickcell(cell);
+					clickcell(cell);
+    			}
+    			public void mouseEntered(MouseEvent e)
+    			{
+    				if(MousePressed) {
+    					clickcell(cell);
+    				}
     			}
     		});
     		list_cell.add(cell);
@@ -176,9 +182,9 @@ public class SceneBuilder extends JFrame{
         		});
                 list_texture_blocks.add(texture_block);
                 menu_textures.add(texture_block, BorderLayout.NORTH);
-                menu_textures.setBorder(new EmptyBorder(1, 5, 10, 10));
 		    }
 	    }
+        leftPane.setBorder(new EmptyBorder(5, 0, 5, 0));
 		menu_textures.add(eraser_btn);
 		menu_textures.add(rotate_btn);
 		menu_textures.add(export_scene_btn);
@@ -188,9 +194,23 @@ public class SceneBuilder extends JFrame{
 		pack();
     }
 	
+	//SALVA A LISTA DE CELULAS EM UM ARQUIVO
 	private void makeScene() {
-		for (int i = 0; i < list_cell.size()-1; i++) {
-			System.out.println(list_cell.get(i).getColor() + " " + list_cell.get(i).getTexture());
+		String name_scene = JOptionPane.showInputDialog("Escreva o nome do mapa a ser gerado, Sem espaço ou pontuação!");
+		if (name_scene != null && !name_scene.isEmpty()) {
+			name_scene.replace(" ", "");
+			name_scene.concat(".dat");
+			
+			try {
+	            FileOutputStream fos = new FileOutputStream(name_scene);
+	            ObjectOutputStream oos = new ObjectOutputStream(fos);
+	            oos.writeObject(list_cell);
+	            oos.close();
+	            fos.close();
+	            JOptionPane.showMessageDialog(null, "Mapa salvo com sucesso!");
+	        } catch (Exception ex) {
+	            ex.printStackTrace();
+	        }
 		}
 	}
 	
@@ -243,6 +263,21 @@ public class SceneBuilder extends JFrame{
 	
 	//COMECO DO PROGRAMA
 	public static void main(String[] args) {
-		SwingUtilities.invokeLater(SceneBuilder::new);
+		SceneBuilder scenebuilder = new SceneBuilder();
+        new Thread(scenebuilder).start();
+	}
+
+	public void run() {
+		for (int i = 0; i < list_cell.size(); i++) {
+			list_cell.get(i).addMouseListener(new MouseAdapter() {
+		        public void mousePressed(MouseEvent e) {
+		        	MousePressed = true;
+		        }
+		        public void mouseReleased(MouseEvent e) {
+		        	MousePressed = false;
+		        }
+		    });
+		}
+		
 	}
 }
