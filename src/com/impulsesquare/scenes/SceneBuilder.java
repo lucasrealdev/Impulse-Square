@@ -43,7 +43,7 @@ public class SceneBuilder extends JFrame implements Runnable {
     private static final int NUM_ROWS = HEIGHT_SCREEN / HEIGHT_CELL; 
     
     //CRIA LISTA COM AS TEXTURAS QUE ESTAO NO PACOTE
-    private File directory = new File("src/com/impulsesquare/textures");
+    private File directory = new File(getClass().getResource("/com/impulsesquare/textures").getFile());
     private File[] files = directory.listFiles();
     
     //CRIA LISTA DE CELULAS	
@@ -112,7 +112,6 @@ public class SceneBuilder extends JFrame implements Runnable {
 	    
 		//CRIA MENU DE TEXTURAS
 	    JPanel menu_textures = new JPanel(new GridLayout(0, 2, 4, 4));
-	    
 	    //CRIA PAINEL QUE GUARDA TEXTURAS
 	    JPanel leftPane = new JPanel(new GridBagLayout());
 	    leftPane.add(menu_textures, gbc);
@@ -215,7 +214,7 @@ public class SceneBuilder extends JFrame implements Runnable {
 		    	//CRIA IMAGEM
                 ImageIcon textures = new ImageIcon(getClass().getResource("/com/impulsesquare/textures/"+images_name));
                 //REDIMENSIONA IMAGENS
-                textures.setImage(textures.getImage().getScaledInstance(WIDTH_CELL, HEIGHT_CELL, 100));
+                textures.setImage(textures.getImage().getScaledInstance(WIDTH_CELL, HEIGHT_CELL, Image.SCALE_SMOOTH));
                 //CRIA BLOCOS DE TEXTURA
                 Cell texture_block = new Cell(textures, images_name.replace(".png", ""));
                 
@@ -251,12 +250,13 @@ public class SceneBuilder extends JFrame implements Runnable {
 		if (name_scene != null && !name_scene.isEmpty()) {
 			name_scene.replace(" ", "");
 			name_scene.concat(".dat");
-			
 			try {
-	            FileOutputStream fos = new FileOutputStream(name_scene);
+	            FileOutputStream fos = new FileOutputStream(name_scene+".dat");
 	            ObjectOutputStream oos = new ObjectOutputStream(fos);
+	            Cell fundo = new Cell();
+	            fundo.setTexture(malha.getBackgroundImage());
+	            list_cell.add(fundo);
 	            oos.writeObject(list_cell);
-	            oos.writeObject(malha.getBackgroundImage());
 	            oos.close();
 	            fos.close();
 	            JOptionPane.showMessageDialog(null, "Mapa salvo com sucesso!");

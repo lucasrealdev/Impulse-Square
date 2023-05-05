@@ -7,7 +7,7 @@ public class Game extends JFrame{
 	
 	public Game() {
 		setTitle("Impulse Square");
-		setSize(1000, 700);
+		setSize(1024, 728);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setLocationRelativeTo(null);
 		setResizable(false);
@@ -15,6 +15,7 @@ public class Game extends JFrame{
 	}
 	
 	public static void main(String[] args) {
+		new Game();
 	}
 
 }
