@@ -107,11 +107,6 @@ public class Level1 extends JPanel implements ActionListener{
 		public void keyPressed(KeyEvent e) {
 			player.keyPressed(e);
 		}
-		
-		@Override
-		public void keyReleased(KeyEvent e) {
-			player.keyReleased(e);
-		}
 	}
 }
  

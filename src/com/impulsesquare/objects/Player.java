@@ -27,8 +27,20 @@ public class Player{
 		size = new Dimension(character_img.getWidth(null), character_img.getHeight(null));
 	}
 	
+	// DEFINE A VELOCIDADE MÁXIMA DO JOGADOR
+    private static final int MAX_SPEED = 5;
+
+    // DEFINE A ACELERAÇÃO DO JOGADOR
+    private static final double ACCELERATION = 0.2;
+
+    // DEFINE A VELOCIDADE ATUAL DO JOGADOR
+    private double speedX = 0;
+    private double speedY = 0;
+	private boolean isMoving = false;
+    
 	// VERIFICA SE O JOGADOR PODE SE MOVER NAS DIREÇÕES X E Y E MOVE ELE
 	public void moviment() {
+		
 		// INICIA AS VARIÁVEIS DE CONTROLE COMO VERDADEIRAS
 		boolean canMoveX = true;
 	    boolean canMoveY = true;
@@ -51,22 +63,26 @@ public class Player{
 	            {
 	                if (playerRect.x < blockRect.x) // VERIFICA SE A LARGURA DA INTERSECÇÃO É MENOR QUE A ALTURA
 	                {
-	                    x = blockRect.x - size.width;
+	                    x = blockRect.x - size.width-5;
+	                    isMoving = false;
 	                }
 	                else
 	                {
-	                    x = blockRect.x + blockRect.width;
+	                    x = blockRect.x + blockRect.width+5;
+	                    isMoving = false;
 	                }
 	            }
 	            else
 	            {
 	                if (playerRect.y < blockRect.y)
 	                {
-	                    y = blockRect.y - size.height;
+	                    y = blockRect.y - size.height-5;
+	                    isMoving = false;
 	                }
 	                else
 	                {
-	                    y = blockRect.y + blockRect.height-2;
+	                    y = blockRect.y + blockRect.height+5;
+	                    isMoving = false;
 	                }
 	            }
 	        }
@@ -78,41 +94,28 @@ public class Player{
 	    if (canMoveY) {
 	        y += dy;
 	    }
+	    System.out.println(isMoving);
 	}
 	
 	public void keyPressed(KeyEvent key) {
 		int code = key.getKeyCode();
-		
-		if (code == KeyEvent.VK_UP) {
-			dy = -3;
-		}
-		if (code == KeyEvent.VK_DOWN) {
-			dy = 3;
-		}
-		if (code == KeyEvent.VK_LEFT) {
-			dx = -3;
-		}
-		if (code == KeyEvent.VK_RIGHT) {
-			dx= 3;
+		if (isMoving == false) {
+			if (code == KeyEvent.VK_UP) {
+				dy = -3;
+			}
+			if (code == KeyEvent.VK_DOWN) {
+				dy = 3;
+			}
+			if (code == KeyEvent.VK_LEFT) {
+				dx = -3;
+			}
+			if (code == KeyEvent.VK_RIGHT) {
+				dx= 3;
+			}
+			isMoving = true;
 		}
 	}
 	
-	public void keyReleased(KeyEvent key) {
-		int code = key.getKeyCode();
-		
-		if (code == KeyEvent.VK_UP) {
-			dy = 0;
-		}
-		if (code == KeyEvent.VK_DOWN) {
-			dy = 0;
-		}
-		if (code == KeyEvent.VK_LEFT) {
-			dx = 0;
-		}
-		if (code == KeyEvent.VK_RIGHT) {
-			dx= 0;
-		}
-	}
 	public Image getCharacter_img() {
 		return character_img;
 	}

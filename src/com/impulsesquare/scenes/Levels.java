@@ -11,7 +11,7 @@ public class Levels extends JFrame{
 		setSize(781, 536);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setLocationRelativeTo(null);
-		setResizable(true);
+		setResizable(false);
 		setVisible(true);
 	}
 	
