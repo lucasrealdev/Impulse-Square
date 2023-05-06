@@ -90,6 +90,7 @@ public class SceneBuilder extends JFrame implements Runnable {
     //CRIA MALHA
     private CustomJPanel malha = new CustomJPanel(new GridLayout(NUM_ROWS, NUM_COLUNMS));
     
+    
 	public SceneBuilder() {
 		setTitle("Criador de Cenas");
 		setSize(new Dimension(WIDTH_SCREEN, HEIGHT_SCREEN));
@@ -270,6 +271,7 @@ public class SceneBuilder extends JFrame implements Runnable {
 	private void clickcell(Cell cell_clicked) {
 		if(isEraser) {
 			cell_clicked.setIcon(transparent_img);
+			cell_clicked.setTexture(transparent_img);
 			return;
 		}
 		boolean find_texture = false;

@@ -18,9 +18,8 @@ public class Cell extends JLabel{
 	private String color;
 	public Cell() {
 		setPreferredSize(new Dimension(45, 45));
-		setBorder(BorderFactory.createLineBorder(Color.black, 1));
-		addhover();
 		setHorizontalAlignment(SwingConstants.CENTER);
+		addhover();
 	}
 	
 	public Cell(ImageIcon texture, String color) {
@@ -41,7 +40,7 @@ public class Cell extends JLabel{
 			}
 			public void mouseExited(MouseEvent e)
 			{
-				setBorder(BorderFactory.createLineBorder(Color.black, 1));
+				setBorder(null);
 			}
 		});
 	}
