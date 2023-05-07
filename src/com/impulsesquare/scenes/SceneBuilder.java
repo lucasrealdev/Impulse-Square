@@ -180,6 +180,7 @@ public class SceneBuilder extends JFrame implements Runnable {
 	        	malha.repaint();
 	        }
 	    });
+	    //CONFIGURA BOTAO DE FUNDO TRANSPARENT
 	    background_transparent.setPreferredSize(new Dimension(50, 50));
 	    background_transparent.setFont(new Font("Serif", Font.PLAIN, 10));
 	    background_transparent.setBorder(BorderFactory.createLineBorder(Color.gray));
@@ -321,6 +322,7 @@ public class SceneBuilder extends JFrame implements Runnable {
         new Thread(scenebuilder).start();
 	}
 
+	//ABRE UMA THREAD PARA DETECTAR SE PRESSIONOU O MOUSE E ARRASTOU
 	public void run() {
 		for (int i = 0; i < list_cell.size(); i++) {
 			list_cell.get(i).addMouseListener(new MouseAdapter() {

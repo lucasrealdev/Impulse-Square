@@ -6,8 +6,9 @@ public class Levels extends JFrame{
 	private static final long serialVersionUID = 1L;
 
 	public Levels() {
-		add(new Level1());
-		setTitle("Fase 1");
+		LoadLevels loader = new LoadLevels();
+		add(loader);
+		setTitle(loader.getSelectedMap().replace(".dat", ""));
 		setSize(781, 536);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setLocationRelativeTo(null);
@@ -18,5 +19,4 @@ public class Levels extends JFrame{
 	public static void main(String[] args) {
 		new Levels();
 	}
-
 }

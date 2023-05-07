@@ -13,38 +13,32 @@ import javax.swing.ImageIcon;
 
 public class Player{
 	private Dimension size;
-	private int x=60, y=60, dx, dy;
-	private Image character_img;
-	private List<Cell> blocks;
+	private int x=60, y=60; //POSICAO DO PLAYER
+	private int dx, dy; //DIRECAO DO PLAYER
+	private Image character_img; //IMAGEM DO PLAYER
+	private List<Cell> blocks; //MAPA DE BLOCOS
 	
+	//RECEBE O MAPA
 	public Player(List<Cell> blocks) {
 		super();
 		this.blocks = blocks;
 	}
+	
+	//CARREGA IMAGEM E DEFINE TAMANHO DO PLAYER
 	public void load(){
 		ImageIcon imageicon = new ImageIcon(getClass().getResource("/com/impulsesquare/images/character-green.png"));
 		character_img = imageicon.getImage();
 		size = new Dimension(character_img.getWidth(null), character_img.getHeight(null));
 	}
 	
-	// DEFINE A VELOCIDADE MÁXIMA DO JOGADOR
-    private static final int MAX_SPEED = 5;
-
-    // DEFINE A ACELERAÇÃO DO JOGADOR
-    private static final double ACCELERATION = 0.2;
-
-    // DEFINE A VELOCIDADE ATUAL DO JOGADOR
-    private double speedX = 0;
-    private double speedY = 0;
-	private boolean isMoving = false;
-    
+	//VARIAVEIS DE CONTROLE
+	private boolean isMoving;
+	private int speed = 16;
+	//private boolean isOut = false;
+	
 	// VERIFICA SE O JOGADOR PODE SE MOVER NAS DIREÇÕES X E Y E MOVE ELE
 	public void moviment() {
 		
-		// INICIA AS VARIÁVEIS DE CONTROLE COMO VERDADEIRAS
-		boolean canMoveX = true;
-	    boolean canMoveY = true;
-	    
 	    // CRIA UM RETÂNGULO QUE REPRESENTA A POSIÇÃO ATUAL DO JOGADOR
 	    Rectangle playerRect = new Rectangle(getX() + dx, getY() + dy, size.width, size.height);
 	    
@@ -56,61 +50,84 @@ public class Player{
 	        
 	        // OBTÉM O RETÂNGULO QUE REPRESENTA OS BLOCOS
 	        Rectangle blockRect = new Rectangle(block.getLocation().x, block.getLocation().y, block.getSize().width, block.getSize().height);
+	        
+	        //DIMINUI HITBOX DOS BLOCOS DE CIMA
+	        if (i <= 17) {
+	        	blockRect = new Rectangle(block.getLocation().x, block.getLocation().y-4, block.getSize().width, block.getSize().height);
+			}
+	        
+	        //VERIFICA COLISAO
 	        if (!new File(block.getTexture().getDescription()).getName().equals("transparent.png") && playerRect.intersects(blockRect)) {
+	        	
 	        	// CRIA UM NOVO RETÂNGULO QUE REPRESENTA A INTERSECÇÃO ENTRE O JOGADOR E O BLOCO
 	            Rectangle intersection = playerRect.intersection(blockRect);
 	            if (intersection.width < intersection.height) 
 	            {
-	                if (playerRect.x < blockRect.x) // VERIFICA SE A LARGURA DA INTERSECÇÃO É MENOR QUE A ALTURA
+	            	if (playerRect.x < blockRect.x)
 	                {
-	                    x = blockRect.x - size.width-5;
-	                    isMoving = false;
+	            		x = blockRect.x - size.width;
 	                }
 	                else
 	                {
-	                    x = blockRect.x + blockRect.width+5;
-	                    isMoving = false;
+	                	x = blockRect.x + size.width+13;
 	                }
 	            }
 	            else
 	            {
-	                if (playerRect.y < blockRect.y)
+	            	if (playerRect.y < blockRect.y)
 	                {
-	                    y = blockRect.y - size.height-5;
-	                    isMoving = false;
+	                    y = blockRect.y - size.height;
 	                }
 	                else
 	                {
-	                    y = blockRect.y + blockRect.height+5;
-	                    isMoving = false;
+	                    y = blockRect.y + size.height+13;
 	                }
 	            }
+	            isMoving = false;
+	            dx=0;
+	    		dy=0;
 	        }
 	    }
 	    
-	    if (canMoveX) {
-	        x += dx;
-	    }
-	    if (canMoveY) {
-	        y += dy;
-	    }
-	    System.out.println(isMoving);
+	    //COLISAO COM A BORDA
+//	    if (x + dx > 781-size.width-9) {
+//	        isOut = true;
+//	    }
+//	    if (x + dx < 0) {
+//	    	isOut = true;
+//	    }
+//	    if (y + dy > 536) {
+//	    	isOut = true;
+//	    }
+//	    if (y + dy < 0) {
+//	    	isOut = true;
+//	    }
+//	    System.out.println(x);
+	    
+//	    if (!isOut) {
+//	    	
+//		}
+	    
+	    x += dx;
+        y += dy;
 	}
 	
+	//EVENTO DE TECLA PRESSIONADA
 	public void keyPressed(KeyEvent key) {
-		int code = key.getKeyCode();
-		if (isMoving == false) {
+		if (!isMoving) {
+			int code = key.getKeyCode();
+			
 			if (code == KeyEvent.VK_UP) {
-				dy = -3;
+				dy = -speed;
 			}
 			if (code == KeyEvent.VK_DOWN) {
-				dy = 3;
+				dy = speed;
 			}
 			if (code == KeyEvent.VK_LEFT) {
-				dx = -3;
+				dx = -speed;
 			}
 			if (code == KeyEvent.VK_RIGHT) {
-				dx= 3;
+				dx= speed;
 			}
 			isMoving = true;
 		}
@@ -125,5 +142,4 @@ public class Player{
 	public int getY() {
 		return y;
 	}
-	
 }

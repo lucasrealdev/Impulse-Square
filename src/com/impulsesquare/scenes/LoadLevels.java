@@ -21,8 +21,9 @@ import javax.swing.Timer;
 import com.impulsesquare.objects.Cell;
 import com.impulsesquare.objects.Player;
 
-public class Level1 extends JPanel implements ActionListener{
+public class LoadLevels extends JPanel implements ActionListener{
 	private static final long serialVersionUID = 1L;
+	//CRIA OBJETOS
 	private Player player;
     private Timer timer;
     
@@ -30,8 +31,11 @@ public class Level1 extends JPanel implements ActionListener{
     private List<Cell> map;
     
     private File directory;
+    private String selectedMap;
+    
 	@SuppressWarnings("unchecked")
-	public Level1() {
+	//CONSTRUTOR
+	public LoadLevels() {
 		setFocusable(true);
 		setDoubleBuffered(true);
 		
@@ -40,7 +44,6 @@ public class Level1 extends JPanel implements ActionListener{
 		directory = new File(System.getProperty("user.dir"));
 		
 		//ADICIONA TODOS OS ARQUIVOS .DAT AO ARRAY
-		
 		ArrayList<String> maps = new ArrayList<String>();
         for (File file : directory.listFiles()) {
             if (file.isFile() && file.getName().endsWith(".dat")) {
@@ -49,20 +52,21 @@ public class Level1 extends JPanel implements ActionListener{
         }
         String[] maps_array = maps.toArray(new String[maps.size()]);
         
-        String selectedValue = (String)JOptionPane.showInputDialog( null, "Selecione um mapa para jogar abaixo: ", "Mapas...",
+        //ESCOLHA DE MAPA
+        selectedMap = (String)JOptionPane.showInputDialog( null, "Selecione um mapa para jogar abaixo: ", "Mapas...",
                 JOptionPane.QUESTION_MESSAGE, 
                 null, 
                 maps_array,
                 maps_array[0]);
         
-        if (selectedValue == null) {
+        if (selectedMap == null) {
 			System.exit(0);
 		}
         
         //GUARDA O MAPA ESCOLHIDO EM UMA LISTA
 		try
 		{
-            FileInputStream fis = new FileInputStream(selectedValue);
+            FileInputStream fis = new FileInputStream(selectedMap);
             ObjectInputStream ois = new ObjectInputStream(fis);
             map = (List<Cell>) ois.readObject();
             ois.close();
@@ -73,14 +77,18 @@ public class Level1 extends JPanel implements ActionListener{
             JOptionPane.showMessageDialog(null, ex.getMessage()); 
         }
 		
+		//CRIA UM PLAYER E CARREGA AS TEXTURAS
 		player = new Player(map);
 		player.load();
 		
 		background = map.get(map.size()-1).getTexture().getImage();
+		
+		//INICIA LOOP
 		timer = new Timer(5, this);
 		timer.start();
 	}
 
+	//FUNCAO QUE DESENHA NA TELA
 	public void paint(Graphics g) {
 		Graphics2D graficos = (Graphics2D) g;
 		graficos.drawImage(background, 0, 0, this);
@@ -96,8 +104,10 @@ public class Level1 extends JPanel implements ActionListener{
 		g.dispose();
 	}
 
+	//CRIA LEITORES DE TECLADO
 	@Override
 	public void actionPerformed(ActionEvent e) {
+		//CHAMA A FUNCAO DE MOVIMENTO
 		player.moviment();
 		repaint();
 	}
@@ -107,6 +117,11 @@ public class Level1 extends JPanel implements ActionListener{
 		public void keyPressed(KeyEvent e) {
 			player.keyPressed(e);
 		}
+	}
+
+	//RETORNA NOME DO MAPA ESCOLHIDO
+	public String getSelectedMap() {
+		return selectedMap;
 	}
 }
  
