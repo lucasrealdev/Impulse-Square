@@ -8,6 +8,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.geom.AffineTransform;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.ObjectInputStream;
@@ -32,7 +33,7 @@ public class LoadLevels extends JPanel implements ActionListener{
     
     private File directory;
     private String selectedMap;
-    
+    AffineTransform skewTransform = AffineTransform.getShearInstance(Math.tan(Math.toRadians(20)), 0);
 	@SuppressWarnings("unchecked")
 	//CONSTRUTOR
 	public LoadLevels() {
@@ -103,7 +104,7 @@ public class LoadLevels extends JPanel implements ActionListener{
 		graficos.drawImage(player.getCharacter_img(), player.getX(), player.getY(), this);
 		g.dispose();
 	}
-
+	
 	//CRIA LEITORES DE TECLADO
 	@Override
 	public void actionPerformed(ActionEvent e) {

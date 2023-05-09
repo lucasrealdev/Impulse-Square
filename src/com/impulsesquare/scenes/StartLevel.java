@@ -2,11 +2,12 @@ package com.impulsesquare.scenes;
 
 import javax.swing.JFrame;
 
-public class Levels extends JFrame{
+public class StartLevel extends JFrame{
 	private static final long serialVersionUID = 1L;
 
-	public Levels() {
-		LoadLevels loader = new LoadLevels();
+	public StartLevel() {
+		LoadLevels loader = new LoadLevels() {
+		private static final long serialVersionUID = 1L;};
 		add(loader);
 		setTitle(loader.getSelectedMap().replace(".dat", ""));
 		setSize(781, 536);
@@ -17,6 +18,6 @@ public class Levels extends JFrame{
 	}
 	
 	public static void main(String[] args) {
-		new Levels();
+		new StartLevel();
 	}
 }
