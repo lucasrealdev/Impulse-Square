@@ -57,7 +57,7 @@ public class SceneBuilder extends JFrame implements Runnable {
     private ImageIcon export_img = new ImageIcon(getClass().getResource("/com/impulsesquare/images/export.png"));
     private ImageIcon eraser_img = new ImageIcon(getClass().getResource("/com/impulsesquare/images/eraser.png"));
     private ImageIcon transparent_img = new ImageIcon(getClass().getResource("/com/impulsesquare/images/transparent.png"));
-    private ImageIcon transparent_bg = new ImageIcon(getClass().getResource("/com/impulsesquare/images/background-white.jpg"));
+    private ImageIcon transparent_bg = new ImageIcon(getClass().getResource("/com/impulsesquare/images/background-white.png"));
     
     //BACKGROUND
     private ImageIcon background_blue = new ImageIcon(getClass().getResource("/com/impulsesquare/images/background-blue.jpg"));
@@ -99,6 +99,7 @@ public class SceneBuilder extends JFrame implements Runnable {
 		setResizable(false);
 		setVisible(true);
 		makebuilder();
+		new Thread(this).start();
 	}
 
 	//FUNCAO PARA CONSTRUIR A TELA E OS COMPONENTES
@@ -315,12 +316,6 @@ public class SceneBuilder extends JFrame implements Runnable {
 	    g2d.dispose();
 	    return new ImageIcon(rotated);
 	}
-	
-	//COMECO DO PROGRAMA
-	public static void main(String[] args) {
-		SceneBuilder scenebuilder = new SceneBuilder();
-        new Thread(scenebuilder).start();
-	}
 
 	//ABRE UMA THREAD PARA DETECTAR SE PRESSIONOU O MOUSE E ARRASTOU
 	public void run() {
@@ -334,6 +329,5 @@ public class SceneBuilder extends JFrame implements Runnable {
 		        }
 		    });
 		}
-		
 	}
 }

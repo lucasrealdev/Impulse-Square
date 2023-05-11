@@ -9,7 +9,7 @@ import javax.swing.JPanel;
 
 public class CustomJPanel extends JPanel{
 	private static final long serialVersionUID = 1L;
-	ImageIcon background = new ImageIcon(getClass().getResource("/com/impulsesquare/images/background-white.jpg"));
+	ImageIcon background = new ImageIcon(getClass().getResource("/com/impulsesquare/images/background-white.png"));
 	public CustomJPanel(GridLayout layout) {
 		setLayout(layout);
 	}
