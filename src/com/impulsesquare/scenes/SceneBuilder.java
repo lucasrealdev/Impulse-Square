@@ -57,6 +57,7 @@ public class SceneBuilder extends JFrame implements Runnable {
     private ImageIcon export_img = new ImageIcon(getClass().getResource("/com/impulsesquare/images/export.png"));
     private ImageIcon eraser_img = new ImageIcon(getClass().getResource("/com/impulsesquare/images/eraser.png"));
     private ImageIcon transparent_img = new ImageIcon(getClass().getResource("/com/impulsesquare/images/transparent.png"));
+    private ImageIcon transparent_bg = new ImageIcon(getClass().getResource("/com/impulsesquare/images/background-white.jpg"));
     
     //BACKGROUND
     private ImageIcon background_blue = new ImageIcon(getClass().getResource("/com/impulsesquare/images/background-blue.jpg"));
@@ -90,11 +91,10 @@ public class SceneBuilder extends JFrame implements Runnable {
     //CRIA MALHA
     private CustomJPanel malha = new CustomJPanel(new GridLayout(NUM_ROWS, NUM_COLUNMS));
     
-    
 	public SceneBuilder() {
 		setTitle("Criador de Cenas");
 		setSize(new Dimension(WIDTH_SCREEN, HEIGHT_SCREEN));
-		setDefaultCloseOperation(EXIT_ON_CLOSE);
+		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		setLocationRelativeTo(null);
 		setResizable(false);
 		setVisible(true);
@@ -176,7 +176,7 @@ public class SceneBuilder extends JFrame implements Runnable {
 	    });
 	    background_transparent.addMouseListener(new MouseAdapter() {
 	        public void mouseClicked(MouseEvent e) {
-	        	malha.setBackground(transparent_img);
+	        	malha.setBackground(transparent_bg);
 	        	malha.repaint();
 	        }
 	    });

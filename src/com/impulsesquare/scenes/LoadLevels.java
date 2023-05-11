@@ -61,10 +61,9 @@ public class LoadLevels extends JPanel implements ActionListener{
                 maps_array[0]);
         
         if (selectedMap == null) {
-			System.exit(0);
-		}
-        
-        //GUARDA O MAPA ESCOLHIDO EM UMA LISTA
+        	return;
+        }
+    	//GUARDA O MAPA ESCOLHIDO EM UMA LISTA
 		try
 		{
             FileInputStream fis = new FileInputStream(selectedMap);
