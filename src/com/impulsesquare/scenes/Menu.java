@@ -35,7 +35,7 @@ public class Menu extends JFrame{
 		CustomButton startButton = new CustomButton(new Dimension(60, 25));
 		CustomButton builderButton = new CustomButton(new Dimension(70, 30));
 		CustomButton tutorialButton = new CustomButton(new Dimension(60, 25));
-		CustomButton closeButton = new CustomButton(new Dimension(20, 20));
+		CustomButton closeButton = new CustomButton(new Dimension(20, 20));//fechar
 		
 		background.setBounds(0, 0, WIDTH, HEIGHT);
 		
