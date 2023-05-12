@@ -286,6 +286,7 @@ public class SceneBuilder extends JFrame implements Runnable {
 				return;
 			}
 		}
+		malha.requestFocus();//REMOVE O FOCO DAS CELULAS
 		if(!find_texture) JOptionPane.showMessageDialog(null, "Nenhuma textura selecionada");
 	}
 	

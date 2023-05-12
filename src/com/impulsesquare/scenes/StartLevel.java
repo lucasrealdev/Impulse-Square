@@ -8,7 +8,7 @@ public class StartLevel extends JFrame{
 	public StartLevel() {
 		LoadLevels loader = new LoadLevels();
 		if (loader.getSelectedMap() == null) {
-			dispose();
+			dispose();//FECHA SE NAO SELECIONAR MAPA
 		}
 		else{
 			add(loader);

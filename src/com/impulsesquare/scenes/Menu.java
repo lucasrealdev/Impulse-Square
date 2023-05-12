@@ -53,7 +53,7 @@ public class Menu extends JFrame{
 		startButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 new StartLevel();
-                setExtendedState(JFrame.ICONIFIED); //MINIMIZA JANELA
+                setExtendedState(JFrame.ICONIFIED);
             }
         });
 		builderButton.addActionListener(new ActionListener() {
