@@ -1,6 +1,7 @@
 package com.impulsesquare.scenes;
 
 import java.awt.Dimension;
+
 import java.awt.HeadlessException;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
@@ -35,7 +36,7 @@ public class Menu extends JFrame{
 		CustomButton startButton = new CustomButton(new Dimension(60, 25));
 		CustomButton builderButton = new CustomButton(new Dimension(70, 30));
 		CustomButton tutorialButton = new CustomButton(new Dimension(60, 25));
-		CustomButton closeButton = new CustomButton(new Dimension(20, 20));//fechar
+		CustomButton closeButton = new CustomButton(new Dimension(20, 20));
 		
 		background.setBounds(0, 0, WIDTH, HEIGHT);
 		
@@ -53,7 +54,7 @@ public class Menu extends JFrame{
 		startButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 new StartLevel();
-                setExtendedState(JFrame.ICONIFIED);
+                setExtendedState(JFrame.ICONIFIED); //MINIMIZA JANELA
             }
         });
 		builderButton.addActionListener(new ActionListener() {
