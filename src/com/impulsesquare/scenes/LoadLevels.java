@@ -1,4 +1,4 @@
-package com.impulsesquare.scenes;
+ package com.impulsesquare.scenes;
 
 import java.awt.Graphics;
 
@@ -8,13 +8,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.awt.geom.AffineTransform;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.ObjectInputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.Timer;
@@ -30,16 +30,21 @@ public class LoadLevels extends JPanel implements ActionListener{
     
     private Image background;
     private List<Cell> map;
+    private List<Cell> newMap;
     
     private File directory;
     private String selectedMap;
-    AffineTransform skewTransform = AffineTransform.getShearInstance(Math.tan(Math.toRadians(20)), 0);
+    
+    // VARIAVEIS DE FPS
+    private int fpsCount = 0;
+    private double fps = 0;
+    private long lastTime = System.currentTimeMillis();
+    
 	@SuppressWarnings("unchecked")
 	//CONSTRUTOR
 	public LoadLevels() {
 		setFocusable(true);
 		setDoubleBuffered(true);
-		
 		addKeyListener(new TecladoAdapter());
 		
 		directory = new File(System.getProperty("user.dir"));
@@ -47,10 +52,13 @@ public class LoadLevels extends JPanel implements ActionListener{
 		//ADICIONA TODOS OS ARQUIVOS .DAT AO ARRAY
 		ArrayList<String> maps = new ArrayList<String>();
         for (File file : directory.listFiles()) {
-            if (file.isFile() && file.getName().endsWith(".dat")) {
-                maps.add(file.getName());
-            }
+        	try {
+        		if (file.getName().endsWith(".dat")) {
+                    maps.add(file.getName());
+                }
+			} catch (Exception e) {e.printStackTrace();}
         }
+        
         String[] maps_array = maps.toArray(new String[maps.size()]);
         
         //ESCOLHA DE MAPA
@@ -63,6 +71,7 @@ public class LoadLevels extends JPanel implements ActionListener{
         if (selectedMap == null) {
         	return;
         }
+        
     	//GUARDA O MAPA ESCOLHIDO EM UMA LISTA
 		try
 		{
@@ -72,35 +81,45 @@ public class LoadLevels extends JPanel implements ActionListener{
             ois.close();
             fis.close();
 		}
-		catch (Exception ex)
-		{
-            JOptionPane.showMessageDialog(null, ex.getMessage()); 
-        }
+		catch (Exception ex){JOptionPane.showMessageDialog(null, ex.getMessage()); }
 		
 		//CRIA UM PLAYER E CARREGA AS TEXTURAS
 		player = new Player(map);
 		player.load();
 		
+		//PEGA A IMAGEM DE FUNDO
 		background = map.get(map.size()-1).getTexture().getImage();
 		
+		newMap = new ArrayList<>(map);
+		
+		//REMOVE O PLAYER DO MAPA
+		for (int i = 0; i < map.size(); i++) {
+			if (map.get(i).getColor() != null && map.get(i).getColor().contains("character")) {
+				newMap.get(i).setColor("");
+				newMap.get(i).setTexture(new ImageIcon(getClass().getResource("/com/impulsesquare/images/transparent.png")));
+				newMap.get(i).setIcon(new ImageIcon(getClass().getResource("/com/impulsesquare/images/transparent.png")));
+			}
+		}
 		//INICIA LOOP
-		timer = new Timer(5, this);
+		timer = new Timer(10, this);
 		timer.start();
 	}
 
 	//FUNCAO QUE DESENHA NA TELA
 	public void paint(Graphics g) {
 		Graphics2D graficos = (Graphics2D) g;
-		graficos.drawImage(background, 0, 0, this);
-		for (int i = 0; i < map.size()-1; i++) {
-			if(i <= 17) {
-				graficos.drawImage(map.get(i).getTexture().getImage(), map.get(i).getX(), map.get(i).getY()-2, this);
-			}
-			else {
-				graficos.drawImage(map.get(i).getTexture().getImage(), map.get(i).getX(), map.get(i).getY(), this);
-			}
+		
+        graficos.drawImage(background, 0, 0, this);
+	    
+		for (int i = 0; i < newMap.size()-1; i++) {
+			graficos.drawImage(newMap.get(i).getTexture().getImage(), newMap.get(i).getX(), newMap.get(i).getY()-1, this);
 		}
+		
 		graficos.drawImage(player.getCharacter_img(), player.getX(), player.getY(), this);
+		
+		// DESENHA FPS
+	    graficos.drawString("FPS: " + String.format("%.2f", fps), 10, 20);
+	    
 		g.dispose();
 	}
 	
@@ -110,6 +129,17 @@ public class LoadLevels extends JPanel implements ActionListener{
 		//CHAMA A FUNCAO DE MOVIMENTO
 		player.moviment();
 		repaint();
+		
+		// CALCULAR FPS
+	    long currentTime = System.currentTimeMillis();
+	    long elapsedTime = currentTime - lastTime;
+	    fpsCount++;
+
+	    if (elapsedTime >= 1000) {
+	        fps = (double) fpsCount / (elapsedTime / 1000.0);
+	        fpsCount = 0;
+	        lastTime = currentTime;
+	    }
 	}
 	
 	private class TecladoAdapter extends KeyAdapter{

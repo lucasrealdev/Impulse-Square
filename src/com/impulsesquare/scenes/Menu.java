@@ -6,7 +6,9 @@ import java.awt.HeadlessException;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 
+import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -23,7 +25,13 @@ public class Menu extends JFrame{
 		setSize(WIDTH+15, HEIGHT+38);
 		setResizable(false);
 		setLocationRelativeTo(this);
-		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+		setDefaultCloseOperation(EXIT_ON_CLOSE);
+		try {
+			Image iconeTitulo = ImageIO.read(getClass().getResource("/com/impulsesquare/images/logo.png"));
+			setIconImage(iconeTitulo);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		createMenu();
 	}
 	private void createMenu() {

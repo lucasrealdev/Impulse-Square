@@ -16,5 +16,6 @@ public class Button extends JButton{
 	    setOpaque(false);
 	    setFocusPainted(false);
 	    setBackground(new Color(0,0,0,0));
+	    setToolTipText("muda o fundo");
 	}
 }

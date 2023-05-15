@@ -1,5 +1,9 @@
 package com.impulsesquare.scenes;
 
+import java.awt.Image;
+import java.io.IOException;
+
+import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 
 public class StartLevel extends JFrame{
@@ -18,6 +22,10 @@ public class StartLevel extends JFrame{
 			setLocationRelativeTo(null);
 			setResizable(false);
 			setVisible(true);
+			try {
+				Image iconeTitulo = ImageIO.read(getClass().getResource("/com/impulsesquare/images/logo.png"));
+				setIconImage(iconeTitulo);
+			} catch (IOException e) {e.printStackTrace();}
 		}
 	}
 }

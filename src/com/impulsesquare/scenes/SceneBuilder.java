@@ -23,11 +23,13 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
 import java.util.ArrayList;
 
+import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
@@ -52,7 +54,7 @@ public class SceneBuilder extends JFrame implements Runnable {
 
 	// CRIA LISTA COM AS TEXTURAS QUE ESTAO NO PACOTE
 	private File directory = new File(getClass().getResource("/com/impulsesquare/textures").getFile());
-	private File[] files = directory.listFiles();
+	private File[] files;
 
 	// CRIA LISTA DE CELULAS
 	private ArrayList<Cell> list_cell = new ArrayList<>();
@@ -101,6 +103,9 @@ public class SceneBuilder extends JFrame implements Runnable {
 
 	// GUARDA SE O MOUSE ESTA PRESSIONADO
 	private boolean MousePressed = false;
+	
+	//GUARDA SE SELECIONOU PERSONAGEM
+	private boolean hasCharacter = false;
 
 	// CRIA MALHA
 	private CustomJPanel malha = new CustomJPanel(new GridLayout(NUM_ROWS, NUM_COLUNMS));
@@ -113,13 +118,20 @@ public class SceneBuilder extends JFrame implements Runnable {
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		setLocationRelativeTo(null);
 		setResizable(false);
-		setVisible(true);
+		try {
+			Image iconeTitulo = ImageIO.read(getClass().getResource("/com/impulsesquare/images/build.png"));
+			setIconImage(iconeTitulo);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		makebuilder();
 		new Thread(this).start();
 	}
 
 	// FUNCAO PARA CONSTRUIR A TELA E OS COMPONENTES
 	private void makebuilder() {
+		files = directory.listFiles();
+		
 		// CRIA A BARRA DE MENU
 		JMenuBar menuBar = new JMenuBar();
 
@@ -131,7 +143,6 @@ public class SceneBuilder extends JFrame implements Runnable {
 		JMenuItem newItem = new JMenuItem("Novo");
 		JMenuItem openItem = new JMenuItem("Abrir");
 		JMenuItem instItem = new JMenuItem("Instruções");
-
 		// ADICIONA OS ITEMS
 		arqmenu.add(newItem);
 		arqmenu.add(openItem);
@@ -172,7 +183,7 @@ public class SceneBuilder extends JFrame implements Runnable {
 			@SuppressWarnings("unchecked")
 			public void actionPerformed(ActionEvent e) {
 				// CRIA O FILE CHOOSER
-				JFileChooser fileChooser = new JFileChooser();
+				JFileChooser fileChooser = new JFileChooser(System.getProperty("user.dir"));
 
 				// EXIBE O DIALOGO DE SELECAO DO ARQUIVO
 				int resultado = fileChooser.showOpenDialog(getContentPane());
@@ -312,25 +323,32 @@ public class SceneBuilder extends JFrame implements Runnable {
 		// PEGAR AS TEXTURAS DO PACOTE
 		leftPane.setBackground(Color.lightGray);
 		menu_textures.setBackground(Color.lightGray);
-		for (File file : files) {
-			if (file.isFile() && file.getName().endsWith(".png")) {
-				// PEGA O NOME DAS IMAGENS RESGATADAS
-				String images_name = file.getName();
-				// CRIA IMAGEM
-				ImageIcon textures = new ImageIcon(
-						getClass().getResource("/com/impulsesquare/textures/" + images_name));
-				// REDIMENSIONA IMAGENS
-				textures.setImage(textures.getImage().getScaledInstance(WIDTH_CELL, HEIGHT_CELL, Image.SCALE_SMOOTH));
-				// CRIA BLOCOS DE TEXTURA
-				Cell texture_block = new Cell(textures, images_name.replace(".png", ""));
-
-				texture_block.addMouseListener(new MouseAdapter() {
-					public void mouseClicked(MouseEvent e) {
-						clicktexture(texture_block);
+		if (files!=null) {
+			for (File file : files) {
+				if (file.isFile() && file.getName().endsWith(".png")) {
+					// PEGA O NOME DAS IMAGENS RESGATADAS
+					String images_name = file.getName();
+					// CRIA IMAGEM
+					ImageIcon textures = new ImageIcon(getClass().getResource("/com/impulsesquare/textures/" + images_name));
+					
+					if (!images_name.contains("character")) {
+						// REDIMENSIONA IMAGENS
+						textures.setImage(textures.getImage().getScaledInstance(WIDTH_CELL, HEIGHT_CELL, Image.SCALE_SMOOTH));
 					}
-				});
-				list_texture_blocks.add(texture_block);
-				menu_textures.add(texture_block, BorderLayout.NORTH);
+					if (images_name.contains("change")) {
+						textures.setImage(textures.getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH));
+					}
+					// CRIA BLOCOS DE TEXTURA
+					Cell texture_block = new Cell(textures, images_name.replace(".png", ""));
+					
+					texture_block.addMouseListener(new MouseAdapter() {
+						public void mouseClicked(MouseEvent e) {
+							clicktexture(texture_block);
+						}
+					});
+					list_texture_blocks.add(texture_block);
+					menu_textures.add(texture_block, BorderLayout.NORTH);
+				}
 			}
 		}
 		leftPane.setBorder(new EmptyBorder(5, 0, 5, 0));
@@ -346,6 +364,7 @@ public class SceneBuilder extends JFrame implements Runnable {
 		getContentPane().add(textures_scroll, BorderLayout.EAST);
 		getContentPane().add(malha, BorderLayout.CENTER);
 		pack();
+		setVisible(true);
 	}
 
 	// SALVA A LISTA DE CELULAS EM UM ARQUIVO
@@ -375,9 +394,19 @@ public class SceneBuilder extends JFrame implements Runnable {
 	// FUNCAO DE QUANDO CLICA NA CELULA
 	private void clickcell(Cell cell_clicked) {
 		if (isEraser) {
+			if (last_texture != null && last_texture.getColor().contains("character")) {
+				hasCharacter = false;
+			}
 			cell_clicked.setIcon(transparent_img);
 			cell_clicked.setTexture(transparent_img);
 			return;
+		}
+		if (last_texture.getColor().contains("character") && hasCharacter) {
+			JOptionPane.showMessageDialog(null, "Você ja colocou um personagem apague ele para colocar outro", "Erro", JOptionPane.WARNING_MESSAGE);
+			return;
+		}
+		else if (last_texture.getColor().contains("character") && !hasCharacter){
+			hasCharacter = true;
 		}
 		boolean find_texture = false;
 		for (int i = 0; i < list_texture_blocks.size(); i++) {
