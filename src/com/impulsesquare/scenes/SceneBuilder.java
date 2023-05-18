@@ -153,7 +153,7 @@ public class SceneBuilder extends JFrame implements Runnable {
 		menuBar.add(helpmenu);
 
 		setJMenuBar(menuBar);
-
+		
 		// BOTAO DE INSTRUCOES
 		instItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -334,9 +334,6 @@ public class SceneBuilder extends JFrame implements Runnable {
 					if (!images_name.contains("character")) {
 						// REDIMENSIONA IMAGENS
 						textures.setImage(textures.getImage().getScaledInstance(WIDTH_CELL, HEIGHT_CELL, Image.SCALE_SMOOTH));
-					}
-					if (images_name.contains("change")) {
-						textures.setImage(textures.getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH));
 					}
 					// CRIA BLOCOS DE TEXTURA
 					Cell texture_block = new Cell(textures, images_name.replace(".png", ""));

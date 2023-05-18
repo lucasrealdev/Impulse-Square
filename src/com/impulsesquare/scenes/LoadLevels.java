@@ -123,6 +123,12 @@ public class LoadLevels extends JPanel implements ActionListener{
 		g.dispose();
 	}
 	
+	public void reset() {
+		player.setClose(true);
+		player = null;
+		timer.stop();
+	}
+	
 	//CRIA LEITORES DE TECLADO
 	@Override
 	public void actionPerformed(ActionEvent e) {

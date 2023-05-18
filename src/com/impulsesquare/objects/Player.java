@@ -26,7 +26,6 @@ public class Player{
 	private List<ImageIcon> list_img_portal = new ArrayList<>();
 	private int index_portal = 10000; 
 	private boolean close_portal = false;
-	
 	//RECEBE O MAPA
 	public Player(List<Cell> blocks) {
 		super();
@@ -58,7 +57,7 @@ public class Player{
 	//VARIAVEIS DE CONTROLE
 	private boolean isMoving;
 	private int speed = 20;
-	
+	private boolean close = false;
 	// VERIFICA SE O JOGADOR PODE SE MOVER NAS DIREÇÕES X E Y E MOVE ELE
 	public void moviment() {
 		
@@ -86,12 +85,7 @@ public class Player{
 	        isColorChange = blockTextureName.contains("change");
 	        
 	        // OBTÉM O RETÂNGULO QUE REPRESENTA O BLOCO
-	        blockRect = new Rectangle(block.getLocation().x, block.getLocation().y, block.getSize().width, block.getSize().height);
-	        
-	        //DIMINUI HITBOX DOS BLOCOS DE CIMA
-	        if (i <= 17) {
-	        	blockRect = new Rectangle(block.getLocation().x, block.getLocation().y-4, block.getSize().width, block.getSize().height);
-			}
+	        blockRect = new Rectangle(block.getLocation().x, block.getLocation().y-1, block.getSize().width, block.getSize().height);
 	        
 	        //VERIFICA COLISAO
 	        if (!isTransparent//IGNORA BLOCOS TRANSPARENTES OU TIJOLOS
@@ -196,7 +190,7 @@ public class Player{
 	
 	private void portal(){
 		new Thread(() -> {
-			while (!close_portal) {
+			while (!close_portal && !close) {
 				for (int i = 0; i < list_img_portal.size(); i++) {
 		            try {
 		                Thread.sleep(50); //ESPERA 50 MILISEGUNDOS
@@ -242,7 +236,6 @@ public class Player{
 			isMoving = true;
 		}
 	}
-
 	public Image getCharacter_img() {
 		return character_img;
 	}
@@ -251,5 +244,8 @@ public class Player{
 	}
 	public int getY() {
 		return y;
+	}
+	public void setClose(boolean close) {
+		this.close = close;
 	}
 }

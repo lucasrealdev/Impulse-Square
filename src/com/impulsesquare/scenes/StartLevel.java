@@ -1,6 +1,8 @@
 package com.impulsesquare.scenes;
 
 import java.awt.Image;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
@@ -8,9 +10,9 @@ import javax.swing.JFrame;
 
 public class StartLevel extends JFrame{
 	private static final long serialVersionUID = 1L;
-
+	LoadLevels loader;
 	public StartLevel() {
-		LoadLevels loader = new LoadLevels();
+		loader = new LoadLevels();
 		if (loader.getSelectedMap() == null) {
 			dispose();
 		}
@@ -27,5 +29,12 @@ public class StartLevel extends JFrame{
 				setIconImage(iconeTitulo);
 			} catch (IOException e) {e.printStackTrace();}
 		}
+		this.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+            	loader.reset();
+            	System.gc();
+            } 
+        });
 	}
 }

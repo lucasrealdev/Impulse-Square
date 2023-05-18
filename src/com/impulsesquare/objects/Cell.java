@@ -19,6 +19,7 @@ public class Cell extends JLabel{
 	public Cell() {
 		setPreferredSize(new Dimension(45, 45));
 		setHorizontalAlignment(SwingConstants.CENTER);
+		setVerticalAlignment(SwingConstants.CENTER);
 		addhover();
 	}
 	
