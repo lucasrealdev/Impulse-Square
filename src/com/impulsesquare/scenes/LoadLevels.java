@@ -95,11 +95,11 @@ public class LoadLevels extends JPanel implements ActionListener{
 		//REMOVE O PLAYER DO MAPA
 		for (int i = 0; i < map.size(); i++) {
 			if (map.get(i).getColor() != null && map.get(i).getColor().contains("character")) {
-				newMap.get(i).setColor("");
 				newMap.get(i).setTexture(new ImageIcon(getClass().getResource("/com/impulsesquare/images/transparent.png")));
 				newMap.get(i).setIcon(new ImageIcon(getClass().getResource("/com/impulsesquare/images/transparent.png")));
 			}
 		}
+		
 		//INICIA LOOP
 		timer = new Timer(10, this);
 		timer.start();
