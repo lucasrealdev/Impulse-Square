@@ -35,7 +35,6 @@ public class Menu extends JFrame{
 		createMenu();
 	}
 	private void createMenu() {
-		
 		background_img.setImage(background_img.getImage().getScaledInstance(WIDTH, HEIGHT, Image.SCALE_SMOOTH));
         
 		JLabel background = new JLabel(background_img);
@@ -67,7 +66,12 @@ public class Menu extends JFrame{
         });
 		builderButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                new SceneBuilder();
+                try {
+					new SceneBuilder();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
                 setExtendedState(JFrame.ICONIFIED);
             }
         });

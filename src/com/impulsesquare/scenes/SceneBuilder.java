@@ -25,12 +25,17 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.CodeSource;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
@@ -111,7 +116,7 @@ public class SceneBuilder extends JFrame implements Runnable {
 
 	private ArrayList<Cell> selection;
 
-	public SceneBuilder() {
+	public SceneBuilder() throws IOException {
 		setTitle("Criador de Cenas");
 		setSize(new Dimension(WIDTH_SCREEN, HEIGHT_SCREEN));
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
@@ -128,7 +133,7 @@ public class SceneBuilder extends JFrame implements Runnable {
 	}
 
 	// FUNCAO PARA CONSTRUIR A TELA E OS COMPONENTES
-	private void makebuilder() {
+	private void makebuilder() throws IOException {
 		// CRIA A BARRA DE MENU
 		JMenuBar menuBar = new JMenuBar();
 
@@ -320,19 +325,38 @@ public class SceneBuilder extends JFrame implements Runnable {
 		// PEGAR AS TEXTURAS DO PACOTE
 		leftPane.setBackground(Color.lightGray);
 		menu_textures.setBackground(Color.lightGray);
-		List<String> listImagesNames = null;
+		
+		CodeSource src = SceneBuilder.class.getProtectionDomain().getCodeSource();
+		List<String> list = new ArrayList<String>();
+		if( src != null ) {
+		    URL jar = src.getLocation();
+		    ZipInputStream zip = new ZipInputStream(jar.openStream());
+		    ZipEntry ze = null;
+
+		    while( ( ze = zip.getNextEntry() ) != null ) {
+		        String entryName = ze.getName();
+		        if( entryName.startsWith("com/impulsesquare/textures") &&  entryName.endsWith(".png") ) {
+		            list.add(entryName);
+		        }
+		    }
+		}
+		    
+		List<String> listImagesNames = new ArrayList<>();
 		try {
-			listImagesNames = Files.walk(Paths.get("src/com/impulsesquare/textures"))
-			        .map(Path::getFileName)
-			        .map(Path::toString)
-			        .filter(n -> n.endsWith(".png"))
-			        .collect(Collectors.toList());
-		} catch (IOException e1) {
-			JOptionPane.showMessageDialog(null, "Texturas não encontradas", "Erro", JOptionPane.ERROR_MESSAGE);
+		    ClassLoader classLoader = getClass().getClassLoader();
+		    URL packageUrl = classLoader.getResource("com/impulsesquare/textures");
+		    if (packageUrl != null) {
+		        Path packagePath = Paths.get(packageUrl.toURI());
+		        Files.walk(packagePath)
+		                .filter(Files::isRegularFile)
+		                .forEach(path -> listImagesNames.add(path.toString()));
+		    }
+		} catch (IOException | URISyntaxException e) {
+		    e.printStackTrace();
 		}
 		for (String images_name : listImagesNames) {
 				// CRIA IMAGEM
-				ImageIcon textures = new ImageIcon(getClass().getResource("/com/impulsesquare/textures/" + images_name));
+				ImageIcon textures = new ImageIcon(images_name);
 				
 				// REDIMENSIONA IMAGENS
 				if (!images_name.contains("character")) {
@@ -393,33 +417,32 @@ public class SceneBuilder extends JFrame implements Runnable {
 
 	// FUNCAO DE QUANDO CLICA NA CELULA
 	private void clickcell(Cell cell_clicked) {
-		if (isEraser) {
-			if (last_texture != null && last_texture.getColor().contains("character")) {
-				hasCharacter = false;
-			}
-			cell_clicked.setIcon(transparent_img);
-			cell_clicked.setTexture(transparent_img);
-			return;
-		}
-		if (last_texture.getColor().contains("character") && hasCharacter) {
-			JOptionPane.showMessageDialog(null, "Você ja colocou um personagem apague ele para colocar outro", "Erro", JOptionPane.WARNING_MESSAGE);
-			return;
-		}
-		else if (last_texture.getColor().contains("character") && !hasCharacter){
-			hasCharacter = true;
-		}
-		boolean find_texture = false;
-		for (int i = 0; i < list_texture_blocks.size(); i++) {
-			if (list_texture_blocks.get(i).isSelected()) {
-				cell_clicked.setIcon(list_texture_blocks.get(i).getTexture());
-				cell_clicked.setTexture(list_texture_blocks.get(i).getTexture());
-				cell_clicked.setColor(list_texture_blocks.get(i).getColor());
-				find_texture = true;
+		if (last_texture != null) {
+			if (isEraser) {
+				if (last_texture.getColor().contains("character")) {
+					hasCharacter = false;
+				}
+				cell_clicked.setIcon(transparent_img);
+				cell_clicked.setTexture(transparent_img);
 				return;
 			}
+			if (last_texture.getColor().contains("character") && hasCharacter) {
+				JOptionPane.showMessageDialog(null, "Você ja colocou um personagem apague ele para colocar outro", "Erro", JOptionPane.WARNING_MESSAGE);
+				return;
+			}
+			else if (last_texture.getColor().contains("character") && !hasCharacter){
+				hasCharacter = true;
+			}
+			for (int i = 0; i < list_texture_blocks.size(); i++) {
+				if (list_texture_blocks.get(i).isSelected()) {
+					cell_clicked.setIcon(list_texture_blocks.get(i).getTexture());
+					cell_clicked.setTexture(list_texture_blocks.get(i).getTexture());
+					cell_clicked.setColor(list_texture_blocks.get(i).getColor());
+					return;
+				}
+			}
 		}
-		if (!find_texture)
-			JOptionPane.showMessageDialog(null, "Nenhuma textura selecionada");
+		JOptionPane.showMessageDialog(null, "Nenhuma textura selecionada");
 	}
 
 	// FUNCAO DE QUANDO CLICA NA TEXTURA

@@ -3,7 +3,7 @@ Um pequeno jogo no 2d feito com java. O jogo consiste em um personagem principal
 
 ## Requisitos para a execução do jogo
 
-Para executar o jogo em formato .jar, é necessário ter o Java 8.1 ou superior instalado em seu computador. Caso ainda não tenha, você pode baixá-lo gratuitamente no site oficial.
+Para executar o jogo é necessário ter o Java 8.1 ou superior instalado em seu computador. Caso ainda não tenha, você pode baixá-lo gratuitamente no site oficial.
 
 ### Execução do Código-Fonte
 
